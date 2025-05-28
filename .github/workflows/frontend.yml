@@ -1,0 +1,31 @@
+name: NestIn Building Frontend
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  buildfrontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up job
+        run: echo "Starting frontend build..."
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node 20.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install dependencies for frontend
+        run: npm ci
+        working-directory: ./web
+
+      - name: Run build for frontend
+        run: npm run build
+        working-directory: ./web

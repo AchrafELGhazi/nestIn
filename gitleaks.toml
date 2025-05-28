@@ -1,0 +1,22 @@
+title = "Custom Gitleaks Rules for NestIn"
+
+[[rules]]
+description = "AWS Access Key"
+regex = '''AKIA[0-9A-Z]{16}'''
+tags = ["key", "aws"]
+
+[[rules]]
+description = "Private RSA Key"
+regex = '''-----BEGIN RSA PRIVATE KEY-----'''
+tags = ["key", "private_key"]
+
+[[rules]]
+description = "JWT Token"
+regex = '''eyJ[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+\.[A-Za-z0-9-_]+'''
+tags = ["jwt", "token"]
+
+[[rules]]
+description = "Typical Node.js environment variable"
+regex = '''(?i)(API_KEY|SECRET|TOKEN|PASSWORD|PRIVATE_KEY|DB_PASSWORD|ACCESS_TOKEN|AUTH_TOKEN)=.{8,}'''
+tags = ["env", "key"]
+

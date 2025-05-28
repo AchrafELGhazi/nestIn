@@ -13,6 +13,8 @@ function Login() {
   const handleSubmit = async e => {
     e.preventDefault();
     setIsLoading(true);
+    setError('');
+
     const formData = new FormData(e.target);
     const username = formData.get('username');
     const password = formData.get('password');
@@ -25,12 +27,10 @@ function Login() {
 
       console.log(res.data);
 
-      navigate('/list')
+      navigate('/list');
     } catch (error) {
       console.log(error);
-      setError(
-        error.response?.data?.message || error.message || 'Registration failed'
-      );
+      setError(error.message);
     } finally {
       setIsLoading(false);
     }

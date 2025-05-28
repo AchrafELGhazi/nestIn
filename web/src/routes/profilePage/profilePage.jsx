@@ -6,7 +6,7 @@ import { AuthContext } from '../../context/AuthContext';
 import { User } from 'lucide-react';
 import { formatDate } from '../../utils/formatDate';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function ProfilePage() {
   const { updateUser, currentUser } = useContext(AuthContext);
@@ -31,7 +31,9 @@ function ProfilePage() {
             <div className='wrapper'>
               <div className='title'>
                 <h1>User Information</h1>
-                <button>Update Profile</button>
+                <Link to={'/profile/update'}>
+                  <button>Update Profile</button>
+                </Link>
               </div>
               <div className='info'>
                 <div className='info-item'>
@@ -63,7 +65,9 @@ function ProfilePage() {
               </div>
               <div className='title'>
                 <h1>My List</h1>
-                <button>Create New Post</button>
+                <Link to={'/post/new'}>
+                  <button>Create New Post</button>
+                </Link>
               </div>
               <List />
               <div className='title'>

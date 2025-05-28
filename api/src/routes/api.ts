@@ -5,8 +5,8 @@ import userRouter from './user.route';
 
 const apiRouter = express.Router();
 
-apiRouter.use('/post', postRouter);
 apiRouter.use('/auth', authRouter);
+apiRouter.use('/post', postRouter);
 apiRouter.use('/user', userRouter);
 
 export default apiRouter;

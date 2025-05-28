@@ -3,35 +3,35 @@ import "./homePage.scss";
 
 function HomePage() {
   return (
-    <div className="homePage">
-      <div className="textContainer">
-        <div className="wrapper">
-          <h1 className="title">Find Real Estate & Get Your Dream Place</h1>
+    <div className='homePage'>
+      <div className='textContainer'>
+        <div className='wrapper'>
+          <h1 className='title'>Find Real Estate & Get Your Dream Place</h1>
           <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Eos
-            explicabo suscipit cum eius, iure est nulla animi consequatur
-            facilis id pariatur fugit quos laudantium temporibus dolor ea
-            repellat provident impedit!
+            At NestIn, we simplify everything, from buying your dream home to
+            selling or renting your property. Whether you're a first-time buyer
+            or an experienced investor, NestIn offers the tools, insights, and
+            expert support you need to make the right decisions.
           </p>
           <SearchBar />
-          <div className="boxes">
-            <div className="box">
+          <div className='boxes'>
+            <div className='box'>
               <h1>16+</h1>
               <h2>Years of Experience</h2>
             </div>
-            <div className="box">
+            <div className='box'>
               <h1>200</h1>
               <h2>Award Gained</h2>
             </div>
-            <div className="box">
+            <div className='box'>
               <h1>2000+</h1>
               <h2>Property Ready</h2>
             </div>
           </div>
         </div>
       </div>
-      <div className="imgContainer">
-        <img src="/bg.png" alt="" />
+      <div className='imgContainer'>
+        <img src='/bg.png' alt='' />
       </div>
     </div>
   );

@@ -38,13 +38,13 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 20px;
-
     button {
       width: 100px;
       padding: 10px;
       border: none;
       cursor: pointer;
       background-color: #fece51;
+      border-radius: 8px;
 
       img {
         width: 24px;

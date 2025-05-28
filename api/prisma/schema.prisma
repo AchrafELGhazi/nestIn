@@ -21,4 +21,23 @@ model User {
   password  String
   avatar    String?
   createdAt DateTime @default(now())
+  updatedAt DateTime?
 }
+
+
+model DeletedUser {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  originalId    String   @unique
+  email         String
+  username      String
+  password      String
+  avatar        String?
+  createdAt     DateTime
+  updatedAt     DateTime?
+  deletedAt     DateTime @default(now())
+  deletedBy     String?
+  deletionReason String?
+}
+
+
+

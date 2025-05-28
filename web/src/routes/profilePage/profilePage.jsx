@@ -1,8 +1,28 @@
+import { useContext } from 'react';
 import Chat from '../../components/chat/Chat';
 import List from '../../components/list/List';
 import './profilePage.scss';
+import { AuthContext } from '../../context/AuthContext';
+import { User } from 'lucide-react';
+import { formatDate } from '../../utils/formatDate';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function ProfilePage() {
+  const { updateUser, currentUser } = useContext(AuthContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/login');
+    }
+  }, [currentUser]);
+
+  if (!currentUser) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className='profilePage'>
       <div className='details'>
@@ -14,18 +34,27 @@ function ProfilePage() {
           <div className='info'>
             <div className='info-item'>
               <span className='label'>Avatar:</span>
-              <img
-                src='https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-                alt='User Avatar'
-              />
+              {currentUser.avatar ? (
+                <img
+                  src={currentUser.avatar}
+                  alt={currentUser.username}
+                  className='user-avatar'
+                />
+              ) : (
+                <User size={27} className='user-icon' />
+              )}
             </div>
             <div className='info-item'>
               <span className='label'>Username:</span>
-              <span className='value'>John Doe</span>
+              <span className='value'>{currentUser.username}</span>
             </div>
             <div className='info-item'>
               <span className='label'>E-mail:</span>
-              <span className='value'>john@gmail.com</span>
+              <span className='value'>{currentUser.email}</span>
+            </div>
+            <div className='info-item'>
+              <span className='label'>Joined at:</span>
+              <span className='value'>{formatDate(currentUser.createdAt)}</span>
             </div>
           </div>
           <div className='title'>

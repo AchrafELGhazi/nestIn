@@ -2,79 +2,226 @@
 
 .profilePage {
   display: flex;
-  height: 100%;
+  height: 100vh;
+  max-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 
-  @include md{
+  @include md {
     flex-direction: column;
-    overflow: scroll;
+    height: auto;
+    min-height: 100vh;
   }
 
   .details {
     flex: 3;
-    overflow-y: scroll;
-    padding-bottom: 50px;
+    overflow-y: auto;
+    padding: 20px 0;
+    background-color: #ffffff;
 
-    @include md{
-      flex:none;
-      height: max-content;
+    @include md {
+      flex: none;
+      padding: 15px 0;
     }
 
-    .wrapper{
-      padding-right: 50px;
+    .wrapper {
+      padding: 0 40px 50px 40px;
       display: flex;
       flex-direction: column;
-      gap: 50px;
+      gap: 40px;
+      max-width: 800px;
 
-      .title{
+      @include md {
+        padding: 0 20px 30px 20px;
+        gap: 30px;
+      }
+
+      .title {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-bottom: 20px;
 
-        h1{
-          font-weight: 300;
+        @include md {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 15px;
+          margin-bottom: 15px;
         }
 
-        button{
+        h1 {
+          font-size: 28px;
+          font-weight: 600;
+          color: #2c3e50;
+          margin: 0;
+          line-height: 1.2;
+
+          @include md {
+            font-size: 24px;
+          }
+        }
+
+        button {
           padding: 12px 24px;
           background-color: #fece51;
+          color: #2c3e50 !important;
           cursor: pointer;
           border: none;
+          border-radius: 6px;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          font-family: inherit;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          white-space: nowrap;
+          min-height: 44px;
+
+          &:hover {
+            background-color: #fed36a;
+            color: #2c3e50 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+          }
+
+          &:active {
+            transform: translateY(0);
+          }
+
+          &:focus {
+            outline: 2px solid #fece51;
+            outline-offset: 2px;
+          }
+
+          @include md {
+            width: 100%;
+            padding: 14px 24px;
+            font-size: 16px !important;
+            min-height: 48px;
+          }
         }
       }
 
-      .info{
+      .info {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 24px;
+        background-color: #f8f9fa;
+        padding: 30px;
+        border-radius: 12px;
+        border: 1px solid #e9ecef;
 
-        span{
-          display: flex;
-          align-items: center;
+        @include md {
+          padding: 20px;
           gap: 20px;
         }
 
-        img{
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          object-fit: cover;
+        .info-item {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+
+          @include md {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+          }
+
+          .label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #6c757d;
+            min-width: 80px;
+
+            @include md {
+              font-size: 14px;
+              min-width: auto;
+            }
+          }
+
+          .value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+
+            @include md {
+              font-size: 16px;
+            }
+          }
+
+          img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #fece51;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+            @include md {
+              width: 60px;
+              height: 60px;
+            }
+          }
         }
       }
     }
   }
+
   .chatContainer {
     flex: 2;
     background-color: #fcf5f3;
     height: 100%;
+    border-left: 1px solid #e9ecef;
 
-    @include md{
-      flex:none;
-      height: max-content;
+    @include md {
+      flex: none;
+      height: 500px;
+      border-left: none;
+      border-top: 1px solid #e9ecef;
     }
 
-    .wrapper{
-      padding: 0px 20px;
+    .wrapper {
+      padding: 20px;
       height: 100%;
+      display: flex;
+      flex-direction: column;
+
+      @include md {
+        padding: 15px;
+      }
+    }
+  }
+}
+
+/* Additional responsive breakpoints */
+@media (max-width: 480px) {
+  .profilePage {
+    .details {
+      .wrapper {
+        padding: 0 15px 20px 15px;
+        
+        .title {
+          h1 {
+            font-size: 22px;
+          }
+        }
+        
+        .info {
+          padding: 15px;
+          
+          .info-item {
+            .label {
+              font-size: 13px;
+            }
+            
+            .value {
+              font-size: 15px;
+            }
+          }
+        }
+      }
     }
   }
 }

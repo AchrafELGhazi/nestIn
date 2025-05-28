@@ -2,39 +2,28 @@ import { useState, useEffect } from 'react';
 import './navbar.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import apiRequest from '../../lib/apiRequest';
+import { useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import { User } from 'lucide-react';
 
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const [user, setUser] = useState(() => {
-    const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
-
   const navigate = useNavigate();
 
+  const { currentUser, updateUser } = useContext(AuthContext);
+  console.log('Current Usser:', currentUser);
 
-  useEffect(() => {
-    const handleStorageChange = () => {
-      const savedUser = localStorage.getItem('user');
-      setUser(savedUser ? JSON.parse(savedUser) : null);
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
 
   const handleLogout = async () => {
     try {
       setError('');
       setIsLoading(true);
-      const result = await apiRequest.post('/auth/logout');
-      localStorage.removeItem('user');
-      setUser(null);
+      await apiRequest.post('/auth/logout');
+      updateUser(null);
       navigate('/');
-      console.log(result.data);
     } catch (error) {
       console.log(error);
       setError(error.message);
@@ -56,16 +45,18 @@ function Navbar() {
         <a href='/'>Agents</a>
       </div>
       <div className='right'>
-        {user ? (
+        {currentUser ? (
           <div className='user'>
-            <img
-              src={
-                user.avatar ||
-                'https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
-              }
-              alt=''
-            />
-            <span>{user.username || 'John Doe'}</span>
+            {currentUser.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt={currentUser.username}
+                className='user-avatar'
+              />
+            ) : (
+              <User size={27} className='user-icon' />
+            )}
+            <span>{currentUser.username}</span>
             <Link to='/profile' className='profile'>
               <div className='notification'>3</div>
               <span>Profile</span>

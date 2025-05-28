@@ -6,7 +6,11 @@ function HomePage() {
     <div className='homePage'>
       <div className='textContainer'>
         <div className='wrapper'>
-          <h1 className='title'>Find Real Estate & Get Your Dream Place</h1>
+          <h1 className='title'>
+            <div className='backdrop'></div>
+            Find <span className='highlight'>Real Estate</span> & Get Your{' '}
+            <span className='highlight'>Dream Place</span>
+          </h1>
           <p>
             At NestIn, we simplify everything, from buying your dream home to
             selling or renting your property. Whether you're a first-time buyer

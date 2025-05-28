@@ -2,11 +2,13 @@ import express from 'express';
 import postRouter from './post.route';
 import authRouter from './auth.route';
 import userRouter from './user.route';
+import testRouter from './test.route';
 
 const apiRouter = express.Router();
 
 apiRouter.use('/auth', authRouter);
 apiRouter.use('/post', postRouter);
 apiRouter.use('/user', userRouter);
+apiRouter.use('/test', testRouter);
 
 export default apiRouter;

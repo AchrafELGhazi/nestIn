@@ -26,6 +26,7 @@ export const register = async (req: Request, res: Response) => {
 
     if (!password) {
       res.status(400).json({ message: 'Password is required' });
+      return
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -75,7 +76,8 @@ export const login = async (req: Request, res: Response) => {
 
     const token = jwt.sign(
       {
-        user,
+        id: user.id,
+        isAdmin: true, // come-back
       },
       JWT_SECRET_KEY,
       { expiresIn: age }

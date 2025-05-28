@@ -321,7 +321,6 @@ export const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-
 export const getDeletedUsers = async (
   req: Request,
   res: Response
@@ -366,10 +365,7 @@ export const getDeletedUsers = async (
   }
 };
 
-export const restoreUser = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const restoreUser = async (req: Request, res: Response) => {
   try {
     const { id: deletedUserId } = req.params;
 

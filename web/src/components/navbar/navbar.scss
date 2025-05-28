@@ -8,13 +8,29 @@ nav {
 
   a {
     transition: all 0.4s ease;
-
+    color: rgba(33, 33, 33, 0.776);
     @include sm {
       display: none;
     }
 
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -7px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background-color: rgba(33, 33, 33, 0.814);
+      transition: width 0.3s ease;
+    }
+
     &:hover {
+      color: rgba(33, 33, 33, 0.897);
       scale: 1.05;
+
+      &::after {
+        width: 100%;
+      }
     }
   }
 
@@ -39,7 +55,7 @@ nav {
         @include md {
           display: none;
         }
-
+        color: black;
         @include sm {
           display: initial;
         }

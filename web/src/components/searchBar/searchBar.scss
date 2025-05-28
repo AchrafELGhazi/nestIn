@@ -1,90 +1,254 @@
 @import "../../responsive.scss";
 
 .searchBar {
-  .type {
+  max-width: 600px;
+  margin: 0 auto 0 0;
+  box-shadow: 0 15px 45px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
 
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+
+
+  .type {
+    display: flex;
+    background: rgba(0, 0, 0, 0.02);
+    padding: 6px;
+    border-radius: 12px 12px 0 0;
+    backdrop-filter: blur(20px);
 
     button {
-      padding: 16px 36px;
-      border: 1px solid #999;
-      border-bottom: none;
+      padding: 10px 24px;
+      border: none;
       cursor: pointer;
-      background-color: white;
+      background: transparent;
       text-transform: capitalize;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      color: #666;
+      flex: 1;
+      border-radius: 10px;
+      margin: 0 3px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transition: left 0.5s;
+      }
+
+      &:hover {
+        transform: translateY(-1px);
+        color: #333;
+        background: rgba(255, 255, 255, 0.7);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+        &::before {
+          left: 100%;
+        }
+      }
 
       &.active {
-        background-color: black;
+        background: linear-gradient(135deg, #000000 0%, #333333 100%);
         color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+
+        &::before {
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        }
       }
 
       &:first-child {
-        border-top-left-radius: 5px;
-        border-right: none;
+        margin-left: 0;
       }
+      
       &:last-child {
-        border-top-right-radius: 5px;
-        border-left: none;
+        margin-right: 0;
       }
     }
   }
 
   form {
-    border: 1px solid #999;
     display: flex;
     justify-content: space-between;
-    height: 64px;
-    gap: 5px;
+    align-items: center;
+    padding: 12px;
+    gap: 10px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 0 0 12px 12px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 12px;
+      right: 12px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.1), transparent);
+    }
 
     @include sm {
       flex-direction: column;
-      border: none;
+      gap: 16px;
+      padding: 20px;
     }
 
     input {
       border: none;
-      padding: 0px 10px;
-      width: 200px;
+      padding: 12px 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      font-size: 14px;
+      font-weight: 500;
+      color: #333;
+      backdrop-filter: blur(10px);
+      border: 2px solid transparent;
+      width: 160px;
+
+      &::placeholder {
+        color: #999;
+        font-weight: 400;
+        transition: color 0.3s ease;
+      }
+
+      &:focus {
+        outline: none;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+        border-color: rgba(254, 206, 81, 0.6);
+        background: white;
+
+        &::placeholder {
+          color: #bbb;
+        }
+      }
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.08);
+      }
 
       @include lg {
-        padding: 0px 5px;
+        padding: 10px 12px;
+        font-size: 13px;
 
         &:nth-child(2),
         &:nth-child(3) {
-          width: 140px;
+          width: 120px;
         }
       }
+
       @include md {
-        width: 200px;
+        width: 160px;
         &:nth-child(2),
         &:nth-child(3) {
-          width: 200px;
+          width: 160px;
         }
       }
 
-      @include sm{
-        width: auto;
+      @include sm {
+        width: 100%;
         &:nth-child(2),
         &:nth-child(3) {
-          width: auto;
+          width: 100%;
         }
-        padding: 20px;
-        border: 1px solid #999;
+        padding: 18px 20px;
+        font-size: 16px;
       }
     }
 
     button {
       border: none;
       cursor: pointer;
-      background-color: #fece51;
-      flex: 1;
+      background: linear-gradient(135deg, #fece51 0%, #ffd700 100%);
+      padding: 12px 20px;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 3px 15px rgba(254, 206, 81, 0.3);
+      position: relative;
+      overflow: hidden;
+      min-width: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-      @include sm{
-        padding: 10px;
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+        transition: left 0.6s;
+      }
+
+      &:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 30px rgba(254, 206, 81, 0.4);
+        background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+
+        &::before {
+          left: 100%;
+        }
+      }
+
+      &:active {
+        transform: translateY(-1px) scale(1.02);
+        box-shadow: 0 6px 25px rgba(254, 206, 81, 0.35);
+      }
+
+      @include sm {
+        padding: 18px 20px;
+        width: 100%;
+        border-radius: 16px;
       }
 
       img {
-        width: 24px;
-        height: 24px;
+        width: 20px;
+        height: 20px;
+        filter: brightness(0) saturate(100%) invert(23%) sepia(12%) saturate(1034%) hue-rotate(314deg) brightness(94%) contrast(88%);
+        transition: all 0.3s ease;
+      }
+
+      &:hover img {
+        transform: scale(1.1);
+        filter: brightness(0) saturate(100%) invert(8%) sepia(8%) saturate(1292%) hue-rotate(314deg) brightness(100%) contrast(102%);
+      }
+    }
+  }
+
+
+  animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+  @include sm {
+    margin: 0px;
+    border-radius: 24px;
+    
+    .type {
+      padding: 12px;
+      border-radius: 20px 20px 0 0;
+      
+      button {
+        padding: 16px 24px;
+        font-size: 16px;
+        border-radius: 16px;
       }
     }
   }

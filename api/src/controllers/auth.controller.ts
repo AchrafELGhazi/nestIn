@@ -25,7 +25,7 @@ export const register = async (req: Request, res: Response) => {
     const { username, email, password } = req.body;
 
     if (!password) {
-       res.status(400).json({ message: "Password is required" });
+      res.status(400).json({ message: 'Password is required' });
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
@@ -40,7 +40,6 @@ export const register = async (req: Request, res: Response) => {
 
     res.status(201).json({
       message: 'User registered successfully',
-      user: newUser,
     });
   } catch (err) {
     console.error(err);
@@ -82,6 +81,8 @@ export const login = async (req: Request, res: Response) => {
       { expiresIn: age }
     );
 
+    const { password:userPassword, ...userInfo } = user;
+
     res
       .cookie('token', token, {
         httpOnly: true,
@@ -89,7 +90,7 @@ export const login = async (req: Request, res: Response) => {
         maxAge: age,
       })
       .status(200)
-      .json({ message: 'Login successful', user });
+      .json({ message: 'Login successful', userInfo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to login user' });

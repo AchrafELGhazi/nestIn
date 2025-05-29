@@ -72,7 +72,7 @@ function Navbar() {
         ) : (
           <>
             <a href='/login'>Sign in</a>
-            <a href='/register' className='register'>
+            <a href='/register' className='register1'>
               Sign up
             </a>
           </>

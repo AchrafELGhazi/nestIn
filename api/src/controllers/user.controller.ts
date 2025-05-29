@@ -75,18 +75,18 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
 };
 
 interface UpdateUserBody {
-  name?: string;
+  username?: string;
   email?: string;
   password?: string;
   avatar?: string;
 }
 
-const ALLOWED_UPDATE_FIELDS = ['name', 'email', 'password', 'avatar'];
+const ALLOWED_UPDATE_FIELDS = ['username', 'email', 'password', 'avatar'];
 
 const USER_SELECT_FIELDS = {
   id: true,
   email: true,
-  name: true,
+  username: true,
   avatar: true,
   createdAt: true,
 };

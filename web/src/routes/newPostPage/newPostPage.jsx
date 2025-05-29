@@ -148,7 +148,6 @@ function NewPostPage() {
       setSuccess('Post created successfully! 🎉');
       resetForm();
 
-      // Auto-hide success message after 5 seconds
       setTimeout(() => {
         setSuccess('');
       }, 5000);

@@ -101,7 +101,7 @@ export const getPost = async (req: Request, res: Response): Promise<void> => {
 interface PostData {
   title: string;
   price: number;
-  img: string;
+  images: string[];
   address: string;
   city: string;
   bedroom: number;
@@ -157,7 +157,9 @@ export const createPost = async (
     if (
       !postData.title ||
       !postData.price ||
-      !postData.img ||
+      !postData.images ||
+      !Array.isArray(postData.images) ||
+      postData.images.length === 0 ||
       !postData.address ||
       !postData.city ||
       !postData.latitude ||

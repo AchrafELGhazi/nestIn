@@ -10,7 +10,9 @@ function ProfileUpdatePage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState('');
-  const [avatar, setAvatar] = useState(currentUser.avatar);
+  const [avatar, setAvatar] = useState([]);
+
+  const displayAvatar = avatar[0] || currentUser.avatar;
 
 
   const handleSubmit = async e => {
@@ -28,7 +30,10 @@ function ProfileUpdatePage() {
     if (username && username.trim()) updateData.username = username.trim();
     if (email && email.trim()) updateData.email = email.trim();
     if (password && password.trim()) updateData.password = password.trim();
-    updateData.avatar = avatar;
+
+    if (avatar[0]) {
+      updateData.avatar = avatar[0];
+    }
     
     if (Object.keys(updateData).length === 0) {
       setError('Please provide at least one field to update');
@@ -122,8 +127,8 @@ function ProfileUpdatePage() {
       </div>
 
       <div className='sideContainer'>
-        {avatar ? (
-          <img src={avatar} alt='User avatar' className='avatar' />
+        {displayAvatar ? (
+          <img src={displayAvatar} alt='User avatar' className='avatar' />
         ) : (
           <User className='avatar text-gray-400' size={120} />
         )}

@@ -2,9 +2,22 @@ import { Request, Response } from 'express';
 import prisma from '../lib/client';
 
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
+  const query = req.query;
+
   try {
     const posts = await prisma.post.findMany({
+      where: {
+        city: (query.city as string) || undefined,
+        type: (query.type as any) || undefined,
+        property: (query.property as any) || undefined,
+        bedroom: query.bedroom ? parseInt(query.bedroom as string) : undefined,
+        price: {
+          gte: query.minPrice ? parseInt(query.minPrice as string) : undefined,
+          lte: query.maxPrice ? parseInt(query.maxPrice as string) : undefined,
+        },
+      },
       include: {
+        PostDetail: true,
         user: {
           select: {
             id: true,
@@ -15,7 +28,7 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
         },
       },
       orderBy: {
-        createdAt: 'desc', // Show newest posts first
+        createdAt: 'desc',
       },
     });
 
@@ -36,20 +49,21 @@ export const getPosts = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const getPost = async (req: Request, res: Response): Promise<void> => {
+  const postId = req.params.id;
+
+  if (!postId || typeof postId !== 'string') {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid post ID provided',
+    });
+    return;
+  }
+
   try {
-    const postId = req.params.id;
-
-    if (!postId || typeof postId !== 'string') {
-      res.status(400).json({
-        success: false,
-        message: 'Invalid post ID provided',
-      });
-      return;
-    }
-
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
+        PostDetail: true,
         user: {
           select: {
             id: true,
@@ -84,6 +98,36 @@ export const getPost = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+interface PostData {
+  title: string;
+  price: number;
+  img: string;
+  address: string;
+  city: string;
+  bedroom: number;
+  bathroom: number;
+  latitude: string;
+  longitude: string;
+  type: 'buy' | 'rent';
+  property: 'apartment' | 'house' | 'condo' | 'land';
+}
+
+interface PostDetailData {
+  description: string;
+  utilities?: string;
+  pet?: string;
+  income?: string;
+  size?: number;
+  school?: number;
+  bus?: number;
+  restaurant?: number;
+}
+
+interface CreatePostBody {
+  postData: PostData;
+  postDetail: PostDetailData;
+}
+
 export const createPost = async (
   req: Request,
   res: Response
@@ -98,51 +142,86 @@ export const createPost = async (
       return;
     }
 
-    const {
-      title,
-      price,
-      img,
-      address,
-      city,
-      bedroom,
-      bathroom,
-      latitude,
-      longitude,
-      type,
-      property,
-    } = req.body;
+    const { postData, postDetail } = req.body as CreatePostBody;
 
+    // Validate that both postData and postDetail are provided
+    if (!postData || !postDetail) {
+      res.status(400).json({
+        success: false,
+        message: 'Missing postData or postDetail',
+      });
+      return;
+    }
+
+    // Validate required fields in postData
     if (
-      !title ||
-      !price ||
-      !address ||
-      !city ||
-      !longitude ||
-      !latitude ||
-      !type ||
-      !property
+      !postData.title ||
+      !postData.price ||
+      !postData.img ||
+      !postData.address ||
+      !postData.city ||
+      !postData.latitude ||
+      !postData.longitude ||
+      !postData.type ||
+      !postData.property
     ) {
       res.status(400).json({
         success: false,
-        message: 'Missing required fields',
+        message: 'Missing required fields in postData',
+      });
+      return;
+    }
+
+    // Validate required fields in postDetail
+    if (!postDetail.description) {
+      res.status(400).json({
+        success: false,
+        message: 'Description is required in postDetail',
       });
       return;
     }
 
     const newPost = await prisma.post.create({
       data: {
-        title,
-        price: parseFloat(price),
-        img,
-        address,
-        city,
-        bedroom: bedroom ? parseInt(bedroom) : 0,
-        bathroom: bathroom ? parseInt(bathroom) : 0,
-        latitude,
-        longitude,
-        type,
-        property,
+        ...postData,
+        price:
+          typeof postData.price === 'string'
+            ? parseFloat(postData.price)
+            : postData.price,
+        bedroom:
+          typeof postData.bedroom === 'string'
+            ? parseInt(postData.bedroom)
+            : postData.bedroom,
+        bathroom:
+          typeof postData.bathroom === 'string'
+            ? parseInt(postData.bathroom)
+            : postData.bathroom,
         userId: tokenUserId,
+        PostDetail: {
+          create: {
+            ...postDetail,
+            size: postDetail.size
+              ? typeof postDetail.size === 'string'
+                ? parseInt(postDetail.size)
+                : postDetail.size
+              : null,
+            school: postDetail.school
+              ? typeof postDetail.school === 'string'
+                ? parseInt(postDetail.school)
+                : postDetail.school
+              : null,
+            bus: postDetail.bus
+              ? typeof postDetail.bus === 'string'
+                ? parseInt(postDetail.bus)
+                : postDetail.bus
+              : null,
+            restaurant: postDetail.restaurant
+              ? typeof postDetail.restaurant === 'string'
+                ? parseInt(postDetail.restaurant)
+                : postDetail.restaurant
+              : null,
+          },
+        },
       },
       include: {
         user: {
@@ -153,6 +232,7 @@ export const createPost = async (
             email: true,
           },
         },
+        PostDetail: true,
       },
     });
 
@@ -187,9 +267,7 @@ export const deletePost = async (
 
   try {
     const postToDelete = await prisma.post.findUnique({
-      where: {
-        id: postId,
-      },
+      where: { id: postId },
     });
 
     if (!postToDelete) {
@@ -200,11 +278,10 @@ export const deletePost = async (
       return;
     }
 
-    const idInPost = postToDelete.userId;
     const tokenUserId = req.userId;
     const isAdmin = req.isAdmin;
 
-    if (idInPost !== tokenUserId && !isAdmin) {
+    if (postToDelete.userId !== tokenUserId && !isAdmin) {
       res.status(403).json({
         success: false,
         message: 'Not authorized to delete this post',
@@ -230,21 +307,9 @@ export const deletePost = async (
   }
 };
 
-type Type = 'buy' | 'rent';
-type Property = 'apartment' | 'house' | 'condo' | 'land';
-
 interface UpdatePostBody {
-  title?: string;
-  price?: number;
-  img?: string;
-  address?: string;
-  city?: string;
-  bedroom?: number;
-  bathroom?: number;
-  latitude?: string;
-  longitude?: string;
-  type?: Type;
-  property?: Property;
+  postData?: Partial<PostData>;
+  postDetail?: Partial<PostDetailData>;
 }
 
 export const updatePost = async (
@@ -253,7 +318,7 @@ export const updatePost = async (
 ): Promise<void> => {
   try {
     const postId = req.params.id;
-    const body = req.body as UpdatePostBody;
+    const { postData, postDetail } = req.body as UpdatePostBody;
 
     if (!postId || typeof postId !== 'string') {
       res.status(400).json({
@@ -263,7 +328,10 @@ export const updatePost = async (
       return;
     }
 
-    if (!body || Object.keys(body).length === 0) {
+    if (
+      (!postData || Object.keys(postData).length === 0) &&
+      (!postDetail || Object.keys(postDetail).length === 0)
+    ) {
       res.status(400).json({
         success: false,
         message: 'No updated data provided',
@@ -273,6 +341,9 @@ export const updatePost = async (
 
     const postToUpdate = await prisma.post.findUnique({
       where: { id: postId },
+      include: {
+        PostDetail: true,
+      },
     });
 
     if (!postToUpdate) {
@@ -283,11 +354,10 @@ export const updatePost = async (
       return;
     }
 
-    const idOfPost = postToUpdate.userId;
     const tokenUserId = req.userId;
     const isAdmin = req.isAdmin;
 
-    if (idOfPost !== tokenUserId && !isAdmin) {
+    if (postToUpdate.userId !== tokenUserId && !isAdmin) {
       res.status(403).json({
         success: false,
         message: 'Not authorized to update post',
@@ -295,23 +365,87 @@ export const updatePost = async (
       return;
     }
 
-    const updateData = { ...body };
-    if (updateData.price && typeof updateData.price === 'string') {
-      updateData.price = parseFloat(updateData.price);
+    // Prepare update data
+    const updateData: any = {
+      updatedAt: new Date(),
+    };
+
+    // Handle postData updates
+    if (postData && Object.keys(postData).length > 0) {
+      const processedPostData = { ...postData };
+
+      if (
+        processedPostData.price &&
+        typeof processedPostData.price === 'string'
+      ) {
+        processedPostData.price = parseFloat(processedPostData.price);
+      }
+      if (
+        processedPostData.bedroom &&
+        typeof processedPostData.bedroom === 'string'
+      ) {
+        processedPostData.bedroom = parseInt(processedPostData.bedroom);
+      }
+      if (
+        processedPostData.bathroom &&
+        typeof processedPostData.bathroom === 'string'
+      ) {
+        processedPostData.bathroom = parseInt(processedPostData.bathroom);
+      }
+
+      Object.assign(updateData, processedPostData);
     }
-    if (updateData.bedroom && typeof updateData.bedroom === 'string') {
-      updateData.bedroom = parseInt(updateData.bedroom);
-    }
-    if (updateData.bathroom && typeof updateData.bathroom === 'string') {
-      updateData.bathroom = parseInt(updateData.bathroom);
+
+    // Handle postDetail updates
+    if (postDetail && Object.keys(postDetail).length > 0) {
+      const processedPostDetail = { ...postDetail };
+
+      if (
+        processedPostDetail.size &&
+        typeof processedPostDetail.size === 'string'
+      ) {
+        processedPostDetail.size = parseInt(processedPostDetail.size);
+      }
+      if (
+        processedPostDetail.school &&
+        typeof processedPostDetail.school === 'string'
+      ) {
+        processedPostDetail.school = parseInt(processedPostDetail.school);
+      }
+      if (
+        processedPostDetail.bus &&
+        typeof processedPostDetail.bus === 'string'
+      ) {
+        processedPostDetail.bus = parseInt(processedPostDetail.bus);
+      }
+      if (
+        processedPostDetail.restaurant &&
+        typeof processedPostDetail.restaurant === 'string'
+      ) {
+        processedPostDetail.restaurant = parseInt(
+          processedPostDetail.restaurant
+        );
+      }
+
+      if (postToUpdate.PostDetail) {
+        // Update existing PostDetail
+        updateData.PostDetail = {
+          update: processedPostDetail,
+        };
+      } else {
+        // Create new PostDetail if it doesn't exist
+        updateData.PostDetail = {
+          create: {
+            description: processedPostDetail.description || '',
+            ...processedPostDetail,
+          },
+        };
+      }
     }
 
     const updatedPost = await prisma.post.update({
       where: { id: postId },
-      data: {
-        ...updateData,
-        updatedAt: new Date(),
-      },
+      data: updateData,
       include: {
         user: {
           select: {
@@ -321,6 +455,7 @@ export const updatePost = async (
             email: true,
           },
         },
+        PostDetail: true,
       },
     });
 

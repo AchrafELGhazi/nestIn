@@ -3,7 +3,6 @@
 .register {
   height: 100vh;
     display: flex;
-    // background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%, #fff8e1 100%);
     margin-top: -30px;
     overflow-y: hidden;
 
@@ -106,16 +105,15 @@
           border-color: rgba(254, 206, 81, 0.5);
         }
 
-        // Stagger animation for each input
-        &:nth-child(3) { // Username
+        &:nth-child(3) { 
           animation-delay: 0.35s;
         }
         
-        &:nth-child(4) { // Email
+        &:nth-child(4) { 
           animation-delay: 0.4s;
         }
         
-        &:nth-child(5) { // Password
+        &:nth-child(5) {
           animation-delay: 0.45s;
         }
       }

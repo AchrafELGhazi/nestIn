@@ -3,12 +3,15 @@ import './profileUpdatePage.scss';
 import { AuthContext } from '../../context/AuthContext';
 import { User } from 'lucide-react';
 import apiRequest from '../../lib/apiRequest';
+import UploadWidget from '../../cloudinary/uploadWidget';
 
 function ProfileUpdatePage() {
   const { currentUser, updateUser } = useContext(AuthContext);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState('');
+  const [avatar, setAvatar] = useState(currentUser.avatar);
+
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -25,7 +28,8 @@ function ProfileUpdatePage() {
     if (username && username.trim()) updateData.username = username.trim();
     if (email && email.trim()) updateData.email = email.trim();
     if (password && password.trim()) updateData.password = password.trim();
-
+    updateData.avatar = avatar;
+    
     if (Object.keys(updateData).length === 0) {
       setError('Please provide at least one field to update');
       setIsLoading(false);
@@ -118,11 +122,21 @@ function ProfileUpdatePage() {
       </div>
 
       <div className='sideContainer'>
-        {currentUser.avatar ? (
-          <img src={currentUser.avatar} alt='User avatar' className='avatar' />
+        {avatar ? (
+          <img src={avatar} alt='User avatar' className='avatar' />
         ) : (
           <User className='avatar text-gray-400' size={120} />
         )}
+        <UploadWidget
+          uwConfig={{
+            cloudName: 'dcrlbpshu',
+            uploadPreset: 'NestIn',
+            multiple: false,
+            maxImageSize: 10000000,
+            folder: 'avatars',
+          }}
+          setState={setAvatar}
+        />
         <div className='user-info'>
           <h3>{currentUser.username}</h3>
           <p>{currentUser.email}</p>

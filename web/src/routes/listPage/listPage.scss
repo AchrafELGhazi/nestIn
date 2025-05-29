@@ -16,6 +16,11 @@
       gap: 50px;
       overflow-y: scroll;
       padding-bottom: 50px;
+
+      @include md{
+        padding-right: 0px;
+        
+      }
     }
   }
   .mapContainer {
@@ -25,6 +30,11 @@
 
     @include md{
       display: none;
+    }
+
+    @include md{
+      display: none;
+
     }
   }
 }

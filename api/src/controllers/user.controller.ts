@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/client';
 import bcrypt from 'bcrypt';
+import { console } from 'node:inspector/promises';
 
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -447,5 +448,46 @@ export const restoreUser = async (req: Request, res: Response) => {
       message: 'Internal server error while restoring user',
       error: process.env.NODE_ENV === 'development' ? error : undefined,
     });
+  }
+};
+
+export const savePost = async (req: Request, res: Response) => {
+  const postId = req.body.id;
+  const tokenUserId = req.userId;
+  console.log(postId);
+  console.log(tokenUserId);
+
+  if (!tokenUserId) {
+    return;
+  }
+  try {
+    const savedPost = await prisma.savedPost.findUnique({
+      where: {
+        userId_postId: {
+          userId: tokenUserId,
+          postId,
+        },
+      },
+    });
+
+    if (savedPost) {
+      await prisma.savedPost.delete({
+        where: {
+          id: savedPost.id,
+        },
+      });
+      res.status(200).json({ message: 'Post removed from saved list' });
+    } else {
+      await prisma.savedPost.create({
+        data: {
+          userId: tokenUserId,
+          postId,
+        },
+      });
+      res.status(200).json({ message: 'Post saved' });
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: 'Failed to save the post!', err });
   }
 };

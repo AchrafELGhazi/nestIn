@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/client';
+import jwt, { JsonWebTokenError, JwtPayload } from 'jsonwebtoken';
 
 export const getPosts = async (req: Request, res: Response): Promise<void> => {
   const query = req.query;
@@ -83,11 +84,69 @@ export const getPost = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Post retrieved successfully',
-      data: post,
-    });
+    const token = req.cookies.token;
+    const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+
+    if (!JWT_SECRET_KEY) {
+      throw new Error('JWT_SECRET_KEY environment variable is missing');
+    }
+
+    if (!token) {
+      res.status(200).json({
+        success: true,
+        message: 'Post retrieved successfully',
+        data: post,
+        isSaved: false,
+      });
+      return;
+    }
+
+    jwt.verify(
+      token,
+      JWT_SECRET_KEY,
+      async (
+        err: JsonWebTokenError | null,
+        payload: JwtPayload | string | undefined
+      ) => {
+        if (err) {
+          return res.status(403).json({
+            success: false,
+            message: 'Token is not valid',
+          });
+        }
+
+        if (!payload || typeof payload === 'string') {
+          return res.status(403).json({
+            success: false,
+            message: 'Invalid token payload',
+          });
+        }
+
+        try {
+          const saved = await prisma.savedPost.findUnique({
+            where: {
+              userId_postId: {
+                postId: postId,
+                userId: payload.id,
+              },
+            },
+          });
+
+          res.status(200).json({
+            success: true,
+            message: 'Post retrieved successfully',
+            data: post,
+            isSaved: !!saved, // Convert to boolean more cleanly
+          });
+        } catch (dbError) {
+          console.error('Database error while checking saved status:', dbError);
+          res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+          });
+        }
+      }
+    );
   } catch (error) {
     console.error('Internal server error while fetching the post:', error);
     res.status(500).json({

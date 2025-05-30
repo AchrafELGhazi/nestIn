@@ -2,6 +2,8 @@ import './singlePage.scss';
 import Slider from '../../components/slider/Slider';
 import Map from '../../components/map/Map';
 import { useLoaderData } from 'react-router-dom';
+import apiRequest from '../../lib/apiRequest';
+import { useState, useEffect } from 'react';
 
 function SinglePage() {
   const data = useLoaderData();
@@ -9,7 +11,46 @@ function SinglePage() {
   const postDetails = postData.PostDetail;
   const userData = postData.user;
 
-  // Helper function to format distance
+  const [isSaved, setIsSaved] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsSaved(data.isSaved || false);
+    console.log('Initial save status:', data.isSaved || false);
+  }, [data.isSaved]);
+
+
+
+  useEffect(() => {
+    console.log('This post is saved: ', isSaved);
+  }, [isSaved]);
+
+
+
+  const handleSave = async () => {
+    try {
+      if (isLoading) return;
+
+      setIsLoading(true);
+      const response = await apiRequest.post('/user/save', {
+        id: postData.id,
+      });
+      console.log(response);
+      const newSavedState = !isSaved;
+      setIsSaved(newSavedState);
+
+      console.log(
+        newSavedState
+          ? 'Post saved successfully!'
+          : 'Post removed from saved list!'
+      );
+    } catch (error) {
+      console.error('Error saving post:', error);
+      alert('Failed to save post. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
   const formatDistance = distance => {
     if (!distance) return 'Not specified';
     return distance >= 1000
@@ -17,7 +58,6 @@ function SinglePage() {
       : `${distance}m`;
   };
 
-  // Helper function to format utilities policy
   const formatUtilities = utilities => {
     switch (utilities) {
       case 'owner':
@@ -31,7 +71,6 @@ function SinglePage() {
     }
   };
 
-  // Helper function to format pet policy
   const formatPetPolicy = pet => {
     switch (pet) {
       case 'allowed':
@@ -43,23 +82,14 @@ function SinglePage() {
     }
   };
 
-  // Helper function to format property type
   const formatPropertyType = type => {
     return type
       ? type.charAt(0).toUpperCase() + type.slice(1)
       : 'Not specified';
   };
 
-  // Helper function to format listing type
   const formatListingType = type => {
     return type === 'buy' ? 'For Sale' : 'For Rent';
-  };
-
-  // Helper function to strip HTML tags from description
-  const stripHtml = html => {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return div.textContent || div.innerText || '';
   };
 
   return (
@@ -110,7 +140,7 @@ function SinglePage() {
       </div>
       <div className='features'>
         <div className='wrapper'>
-          <p className='title'>General Information</p>
+          <p className='title1'>General Information</p>
           <div className='listVertical'>
             <div className='feature'>
               <img src='/utility.png' alt='Utilities icon' />
@@ -135,7 +165,7 @@ function SinglePage() {
             </div>
           </div>
 
-          <p className='title'>Property Details</p>
+          <p className='title1'>Property Details</p>
           <div className='sizes'>
             {postDetails.size && (
               <div className='size'>
@@ -159,7 +189,7 @@ function SinglePage() {
             </div>
           </div>
 
-          <p className='title'>Nearby Places</p>
+          <p className='title1'>Nearby Places</p>
           <div className='listHorizontal'>
             {postDetails.school && (
               <div className='feature'>
@@ -192,7 +222,7 @@ function SinglePage() {
 
           {postData.latitude && postData.longitude && (
             <>
-              <p className='title'>Location</p>
+              <p className='title1'>Location</p>
               <div className='mapContainer'>
                 <Map items={[postData]} />
               </div>
@@ -200,7 +230,7 @@ function SinglePage() {
           )}
 
           <div className='property-meta'>
-            <p className='title'>Property Information</p>
+            <p className='title1'>Property Information</p>
             <div className='meta-grid'>
               <div className='meta-item'>
                 <span className='meta-label'>Listed on:</span>
@@ -233,9 +263,17 @@ function SinglePage() {
               <img src='/chat.png' alt='Chat icon' />
               Send a Message
             </button>
-            <button className='save-btn'>
+            <button
+              className={`save-btn ${isSaved ? 'saved' : ''}`}
+              onClick={handleSave}
+              disabled={isLoading}
+            >
               <img src='/save.png' alt='Save icon' />
-              Save the Place
+              {isLoading
+                ? 'Saving...'
+                : isSaved
+                ? 'Remove from Saved'
+                : 'Save the Place'}
             </button>
           </div>
         </div>

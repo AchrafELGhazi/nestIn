@@ -1,7 +1,6 @@
 import './register.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import axios from 'axios';
 import apiRequest from '../../lib/apiRequest';
 
 function Register() {

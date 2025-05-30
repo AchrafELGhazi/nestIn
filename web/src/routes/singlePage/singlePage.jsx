@@ -19,13 +19,9 @@ function SinglePage() {
     console.log('Initial save status:', data.isSaved || false);
   }, [data.isSaved]);
 
-
-
   useEffect(() => {
     console.log('This post is saved: ', isSaved);
   }, [isSaved]);
-
-
 
   const handleSave = async () => {
     try {
@@ -51,6 +47,7 @@ function SinglePage() {
       setIsLoading(false);
     }
   };
+
   const formatDistance = distance => {
     if (!distance) return 'Not specified';
     return distance >= 1000
@@ -96,145 +93,236 @@ function SinglePage() {
     <div className='singlePage'>
       <div className='details'>
         <div className='wrapper'>
-          <Slider images={postData.images} />
-          <div className='info'>
-            <div className='top'>
-              <div className='post'>
-                <h1>{postData.title}</h1>
-                <div className='address'>
-                  <img src='/pin.png' alt='Location pin' />
-                  <span>
-                    {postData.address}, {postData.city}
-                  </span>
-                </div>
-                <div className='price'>
-                  ${postData.price?.toLocaleString()}
-                  <span className='listing-type'>
-                    ({formatListingType(postData.type)})
-                  </span>
-                </div>
-                <div className='property-type'>
-                  {formatPropertyType(postData.property)}
-                </div>
-              </div>
-              <div className='user'>
-                <img
-                  src={userData.avatar}
-                  alt={`${userData.username}'s avatar`}
-                />
-                <div className='user-info'>
-                  <span className='username'>{userData.username}</span>
-                  <br />
-                  <span className='email'>{userData.email}</span>
-                </div>
+          <div className='owner-header'>
+            <div className='owner-info'>
+              <img
+                src={userData.avatar}
+                alt={`${userData.username}'s avatar`}
+                className='owner-avatar'
+              />
+              <div className='owner-details'>
+                <h3 className='owner-name'>{userData.username}</h3>
+                <p className='owner-email'>{userData.email}</p>
+                <span className='listing-date'>
+                  Listed{' '}
+                  {new Date(postData.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
+                </span>
               </div>
             </div>
-            <div className='bottom'>
-              <div
-                className='description'
-                dangerouslySetInnerHTML={{ __html: postDetails.description }}
-              />
+            <div className='action-buttons'>
+              <button
+                className='message-btn'
+                onClick={() => console.log('Message owner')}
+              >
+                <img src='/chat.png' alt='Chat icon' />
+                Message
+              </button>
+              <button
+                className={`save-btn ${isSaved ? 'saved' : ''}`}
+                onClick={handleSave}
+                disabled={isLoading}
+              >
+                <img src='/save.png' alt='Save icon' />
+                {isLoading ? 'Saving...' : isSaved ? 'Saved' : 'Save'}
+              </button>
+            </div>
+          </div>
+
+          <div className='property-header'>
+            <div className='property-title-section'>
+              <div className='property-badges'>
+                <span className='property-type-badge'>
+                  {formatPropertyType(postData.property)}
+                </span>
+                <span className='listing-type-badge'>
+                  {formatListingType(postData.type)}
+                </span>
+              </div>
+              <h1 className='property-title'>{postData.title}</h1>
+              <div className='property-location'>
+                <img src='/pin.png' alt='Location pin' />
+                <span>
+                  {postData.address}, {postData.city}
+                </span>
+              </div>
+              <div className='price-container'>
+                <span className='price'>
+                  ${postData.price?.toLocaleString()}
+                </span>
+                <span className='price-type'>
+                  {postData.type === 'buy' ? 'Purchase Price' : 'Monthly Rent'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className='property-images'>
+            <Slider images={postData.images} />
+          </div>
+
+          <div className='property-description'>
+            <h2 className='section-title'>About this property</h2>
+            <div
+              className='description-content'
+              dangerouslySetInnerHTML={{ __html: postDetails.description }}
+            />
+          </div>
+
+          <div className='property-specs'>
+            <h2 className='section-title'>Property Specifications</h2>
+            <div className='specs-grid'>
+              {postDetails.size && (
+                <div className='spec-item'>
+                  <img src='/size.png' alt='Size icon' />
+                  <div className='spec-details'>
+                    <span className='spec-label'>Size</span>
+                    <span className='spec-value'>
+                      {postDetails.size.toLocaleString()} sqft
+                    </span>
+                  </div>
+                </div>
+              )}
+              <div className='spec-item'>
+                <img src='/bed.png' alt='Bedroom icon' />
+                <div className='spec-details'>
+                  <span className='spec-label'>Bedrooms</span>
+                  <span className='spec-value'>{postData.bedroom}</span>
+                </div>
+              </div>
+              <div className='spec-item'>
+                <img src='/bath.png' alt='Bathroom icon' />
+                <div className='spec-details'>
+                  <span className='spec-label'>Bathrooms</span>
+                  <span className='spec-value'>{postData.bathroom}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
       <div className='features'>
         <div className='wrapper'>
-          <p className='title1'>General Information</p>
-          <div className='listVertical'>
-            <div className='feature'>
-              <img src='/utility.png' alt='Utilities icon' />
-              <div className='featureText'>
-                <span>Utilities</span>
-                <p>{formatUtilities(postDetails.utilities)}</p>
+          <div className='info-section'>
+            <h2 className='section-title'>General Information</h2>
+            <div className='info-grid'>
+              <div className='info-item'>
+                <img src='/utility.png' alt='Utilities icon' />
+                <div className='info-content'>
+                  <span className='info-label'>Utilities</span>
+                  <p className='info-value'>
+                    {formatUtilities(postDetails.utilities)}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className='feature'>
-              <img src='/pet.png' alt='Pet policy icon' />
-              <div className='featureText'>
-                <span>Pet Policy</span>
-                <p>{formatPetPolicy(postDetails.pet)}</p>
+              <div className='info-item'>
+                <img src='/pet.png' alt='Pet policy icon' />
+                <div className='info-content'>
+                  <span className='info-label'>Pet Policy</span>
+                  <p className='info-value'>
+                    {formatPetPolicy(postDetails.pet)}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div className='feature'>
-              <img src='/fee.png' alt='Income requirements icon' />
-              <div className='featureText'>
-                <span>Income Requirements</span>
-                <p>{postDetails.income || 'No specific requirements'}</p>
+              <div className='info-item'>
+                <img src='/fee.png' alt='Income requirements icon' />
+                <div className='info-content'>
+                  <span className='info-label'>Income Requirements</span>
+                  <p className='info-value'>
+                    {postDetails.income || 'No specific requirements'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
-          <p className='title1'>Property Details</p>
-          <div className='sizes'>
-            {postDetails.size && (
-              <div className='size'>
-                <img src='/size.png' alt='Size icon' />
-                <span>{postDetails.size.toLocaleString()} sqft</span>
+          {(postDetails.school ||
+            postDetails.bus ||
+            postDetails.restaurant) && (
+            <div className='nearby-section'>
+              <h2 className='section-title'>Nearby Places</h2>
+              <div className='nearby-grid'>
+                {postDetails.school && (
+                  <div className='nearby-item'>
+                    <img src='/school.png' alt='School icon' />
+                    <div className='nearby-content'>
+                      <span className='nearby-label'>School</span>
+                      <p className='nearby-distance'>
+                        {formatDistance(postDetails.school)} away
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {postDetails.bus && (
+                  <div className='nearby-item'>
+                    <img src='/bus.png' alt='Bus stop icon' />
+                    <div className='nearby-content'>
+                      <span className='nearby-label'>Public Transport</span>
+                      <p className='nearby-distance'>
+                        {formatDistance(postDetails.bus)} away
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {postDetails.restaurant && (
+                  <div className='nearby-item'>
+                    <img src='/restaurant.png' alt='Restaurant icon' />
+                    <div className='nearby-content'>
+                      <span className='nearby-label'>Restaurant</span>
+                      <p className='nearby-distance'>
+                        {formatDistance(postDetails.restaurant)} away
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
-            <div className='size'>
-              <img src='/bed.png' alt='Bedroom icon' />
-              <span>
-                {postData.bedroom}{' '}
-                {postData.bedroom === 1 ? 'bedroom' : 'bedrooms'}
-              </span>
             </div>
-            <div className='size'>
-              <img src='/bath.png' alt='Bathroom icon' />
-              <span>
-                {postData.bathroom}{' '}
-                {postData.bathroom === 1 ? 'bathroom' : 'bathrooms'}
-              </span>
-            </div>
-          </div>
-
-          <p className='title1'>Nearby Places</p>
-          <div className='listHorizontal'>
-            {postDetails.school && (
-              <div className='feature'>
-                <img src='/school.png' alt='School icon' />
-                <div className='featureText'>
-                  <span>School</span>
-                  <p>{formatDistance(postDetails.school)} away</p>
-                </div>
-              </div>
-            )}
-            {postDetails.bus && (
-              <div className='feature'>
-                <img src='/bus.png' alt='Bus stop icon' />
-                <div className='featureText'>
-                  <span>Public Transport</span>
-                  <p>{formatDistance(postDetails.bus)} away</p>
-                </div>
-              </div>
-            )}
-            {postDetails.restaurant && (
-              <div className='feature'>
-                <img src='/restaurant.png' alt='Restaurant icon' />
-                <div className='featureText'>
-                  <span>Restaurant</span>
-                  <p>{formatDistance(postDetails.restaurant)} away</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {postData.latitude && postData.longitude && (
-            <>
-              <p className='title1'>Location</p>
-              <div className='mapContainer'>
-                <Map items={[postData]} />
-              </div>
-            </>
           )}
 
-          <div className='property-meta'>
-            <p className='title1'>Property Information</p>
-            <div className='meta-grid'>
-              <div className='meta-item'>
-                <span className='meta-label'>Listed on:</span>
-                <span className='meta-value'>
+          {postData.latitude && postData.longitude && (
+            <div className='location-section'>
+              <h2 className='section-title'>Location</h2>
+              <div className='map-wrapper'>
+                <div className='map-container'>
+                  <Map items={[postData]} />
+                </div>
+                <div className='coordinates-info'>
+                  <span className='coordinates-label'>Coordinates:</span>
+                  <span className='coordinates-value'>
+                    {parseFloat(postData.latitude).toFixed(6)},{' '}
+                    {parseFloat(postData.longitude).toFixed(6)}
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className='property-details-section'>
+            <h2 className='section-title'>Property Details</h2>
+            <div className='details-grid'>
+              <div className='detail-item'>
+                <span className='detail-label'>Property ID</span>
+                <span className='detail-value'>{postData.id}</span>
+              </div>
+              <div className='detail-item'>
+                <span className='detail-label'>Property Type</span>
+                <span className='detail-value'>
+                  {formatPropertyType(postData.property)}
+                </span>
+              </div>
+              <div className='detail-item'>
+                <span className='detail-label'>Listing Type</span>
+                <span className='detail-value'>
+                  {formatListingType(postData.type)}
+                </span>
+              </div>
+              <div className='detail-item'>
+                <span className='detail-label'>Listed Date</span>
+                <span className='detail-value'>
                   {new Date(postData.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
                     month: 'long',
@@ -242,39 +330,7 @@ function SinglePage() {
                   })}
                 </span>
               </div>
-              <div className='meta-item'>
-                <span className='meta-label'>Property ID:</span>
-                <span className='meta-value'>{postData.id}</span>
-              </div>
-              {postData.latitude && postData.longitude && (
-                <div className='meta-item'>
-                  <span className='meta-label'>Coordinates:</span>
-                  <span className='meta-value'>
-                    {parseFloat(postData.latitude).toFixed(6)},{' '}
-                    {parseFloat(postData.longitude).toFixed(6)}
-                  </span>
-                </div>
-              )}
             </div>
-          </div>
-
-          <div className='buttons'>
-            <button className='message-btn'>
-              <img src='/chat.png' alt='Chat icon' />
-              Send a Message
-            </button>
-            <button
-              className={`save-btn ${isSaved ? 'saved' : ''}`}
-              onClick={handleSave}
-              disabled={isLoading}
-            >
-              <img src='/save.png' alt='Save icon' />
-              {isLoading
-                ? 'Saving...'
-                : isSaved
-                ? 'Remove from Saved'
-                : 'Save the Place'}
-            </button>
           </div>
         </div>
       </div>

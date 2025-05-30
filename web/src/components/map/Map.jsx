@@ -9,10 +9,12 @@ function Map({ items }) {
       ? [items[0].latitude, items[0].longitude]
       : [29.7917, -8.0926];
 
+
+  const zoom= items.length===1 ?16:5
   return (
     <MapContainer
       center={center}
-      zoom={5}
+      zoom={zoom}
       scrollWheelZoom={false}
       className='map'
     >

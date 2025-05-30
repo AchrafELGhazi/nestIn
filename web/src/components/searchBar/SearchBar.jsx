@@ -62,7 +62,6 @@ function SearchBar() {
         ))}
       </div>
 
-      {/* Option 1: Using form submission (Recommended) */}
       <form onSubmit={handleSubmit}>
         <input
           type='text'

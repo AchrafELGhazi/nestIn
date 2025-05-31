@@ -9,9 +9,13 @@ export const SocketContext = createContext();
 export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const { currentUser } = useContext(AuthContext);
+  const SOCKET_URL = import.meta.env.VITE_SOCKET_URL;
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3005');
+    const newSocket = io(SOCKET_URL, {
+      // withCredentials: true,
+    });
+
     newSocket.on('connect', () => {
       console.log('Socket connected:', newSocket.id);
     });

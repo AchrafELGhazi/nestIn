@@ -20,9 +20,6 @@ if (!saltRoundsEnv || isNaN(Number(saltRoundsEnv))) {
 
 const SALT_ROUNDS = parseInt(saltRoundsEnv, 10);
 
-const isProduction = process.env.NODE_ENV === 'production';
-
-
 export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
@@ -87,18 +84,16 @@ export const login = async (req: Request, res: Response) => {
     );
 
     const { password:userPassword, ...userInfo } = user;
-    res
-      .cookie('token', token, {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        maxAge: age,
-      })
+    const isProduction = process.env.NODE_ENV === 'production';
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: isProduction, // Only send over HTTPS in production
+      sameSite: isProduction ? 'none' : 'lax', // Allow cross-site cookies in production
+      maxAge: age, // Your expiry logic
+    })
       .status(200)
-      .json({
-        message: 'Login successful',
-        user: userInfo,
-      });
+      .json({ message: 'Login successful', userInfo });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Failed to login user' });

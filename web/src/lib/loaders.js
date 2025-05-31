@@ -17,3 +17,12 @@ export const listPageLoader = async ({ request, params }) => {
     postResponse: postPromise,
   });
 };
+
+export const profilePageLoader = async () => {
+  const postPromise = apiRequest(`/user/my-list`).then(
+    response => response.data
+  );
+  return defer({
+    postResponse: postPromise,
+  });
+};

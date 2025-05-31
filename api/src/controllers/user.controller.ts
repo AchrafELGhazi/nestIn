@@ -491,3 +491,34 @@ export const savePost = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Failed to save the post!', err });
   }
 };
+
+export const getMyList = async (req: Request, res: Response) => {
+  const tokenUserId = req.userId;
+
+  if (!tokenUserId) {
+    return res.status(401).json({
+      success: false,
+      message: 'User authentication required',
+    });
+  }
+
+  try {
+    const myList = await prisma.post.findMany({
+      where: { userId: tokenUserId },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'My list retrieved successfully',
+      data: myList,
+      count: myList.length,
+    });
+  } catch (error) {
+    console.error('Error getting user posts:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while getting my list',
+    });
+  }
+};

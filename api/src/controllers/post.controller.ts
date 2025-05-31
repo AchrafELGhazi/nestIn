@@ -489,12 +489,10 @@ export const updatePost = async (
       }
 
       if (postToUpdate.PostDetail) {
-        // Update existing PostDetail
         updateData.PostDetail = {
           update: processedPostDetail,
         };
       } else {
-        // Create new PostDetail if it doesn't exist
         updateData.PostDetail = {
           create: {
             description: processedPostDetail.description || '',

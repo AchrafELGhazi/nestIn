@@ -29,7 +29,6 @@ const io = new Server({
   // pingInterval: 25000,
 });
 
-// Move colors and log functions to the top
 const colors = {
   reset: '\x1b[0m',
   bright: '\x1b[1m',
@@ -91,7 +90,6 @@ const addUser = (userId: string, socketId: string): void => {
   }
 };
 
-// FIXED: Added return statement
 const removeUser = (socketId: string): void => {
   onlineUsers = onlineUsers.filter(user => user.socketId !== socketId);
 };

@@ -27,8 +27,14 @@ export const profilePageLoader = async () => {
     response => response.data
   );
 
+  const chatsPromise = apiRequest(`/chat`).then(
+    response => response.data
+  );
+
   return defer({
     listResponse: listPromise,
     savedResponse: savedPromise,
+    chatResponse: chatsPromise,
   });
 };
+

@@ -12,7 +12,7 @@ import { Suspense } from 'react';
 
 function ProfilePage() {
   const { updateUser, currentUser } = useContext(AuthContext);
-  const { listResponse, savedResponse } = useLoaderData();
+  const { listResponse, savedResponse, chatResponse } = useLoaderData();
 
   if (!currentUser) {
     return <div>Loading...</div>;
@@ -97,7 +97,14 @@ function ProfilePage() {
           </div>
           <div className='chatContainer'>
             <div className='wrapper'>
-              <Chat />
+              <Suspense fallback={<p>Loading...</p>}>
+                <Await
+                  resolve={chatResponse}
+                  errorElement={<p>Error loading chats!</p>}
+                >
+                  {chatResponse => <Chat chats={chatResponse.data} />}
+                </Await>
+              </Suspense>
             </div>
           </div>
         </div>

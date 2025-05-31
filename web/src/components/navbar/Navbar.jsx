@@ -113,7 +113,7 @@ function Navbar() {
             {currentUser ? (
               <div className='menu-user-section'>
                 <div className='menu-user-info'>
-                  {currentUser.avatar ? (
+                  {/* {currentUser.avatar ? (
                     <img
                       src={currentUser.avatar}
                       alt={currentUser.username}
@@ -121,7 +121,7 @@ function Navbar() {
                     />
                   ) : (
                     <User size={24} className='menu-user-icon' />
-                  )}
+                  )} */}
                   <span className='menu-username'>{currentUser.username}</span>
                   <div className='menu-notification'>3</div>
                 </div>

@@ -4,11 +4,10 @@ import prisma from '../lib/client';
 export const getChats = async (req: Request, res: Response) => {
   const tokenUserId = req.userId;
   if (!tokenUserId) {
-    res.status(401).json({
+     res.status(401).json({
       success: false,
       message: 'User authentication required',
-    });
-    return;
+    });return;
   }
 
   try {
@@ -32,11 +31,25 @@ export const getChats = async (req: Request, res: Response) => {
       },
     });
 
+    const transformedChats = chats.map(chat => {
+      const receiver = chat.user.find(user => user.id !== tokenUserId);
+
+      return {
+        id: chat.id,
+        receiver: receiver || null,
+        seenBy: chat.seenBy,
+        createdAt: chat.createdAt,
+        updatedAt: chat.updatedAt,
+        lastMessage: chat.lastMessage,
+        isUnread: !chat.seenBy.includes(tokenUserId),
+      };
+    });
+
     res.status(200).json({
       success: true,
       message: 'Chats retrieved successfully',
-      data: chats,
-      count: chats.length,
+      data: transformedChats,
+      count: transformedChats.length,
     });
   } catch (error) {
     console.error('Error getting chats:', error);

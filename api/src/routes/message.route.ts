@@ -1,3 +1,4 @@
+import { addMessage } from '../controllers/message.controller';
 import {
   getMyList,
   getMySaved,
@@ -9,10 +10,6 @@ import express, { Request, Response } from 'express';
 
 const messageRouter = express.Router();
 
-messageRouter.get(
-  '/',
-  verifyToken
-  // getUsers
-);
+messageRouter.post('/:id', verifyToken, addMessage);
 
 export default messageRouter;

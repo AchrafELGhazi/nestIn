@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../lib/client';
 import bcrypt from 'bcrypt';
-import { console } from 'node:inspector/promises';
 
 export const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {

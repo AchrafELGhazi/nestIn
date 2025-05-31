@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import './navbar.scss';
 import { Link, useNavigate } from 'react-router-dom';
 import apiRequest from '../../lib/apiRequest';
-import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { User } from 'lucide-react';
+import { useNotificationStore } from '../../lib/notificationStore';
 
 function Navbar() {
   const [open, setOpen] = useState(false);
@@ -13,11 +13,27 @@ function Navbar() {
   const navigate = useNavigate();
   const { currentUser, updateUser } = useContext(AuthContext);
 
+  const {
+    number: notificationCount,
+    isLoading: notificationsLoading,
+    fetch: fetchNotifications,
+    reset: resetNotifications,
+  } = useNotificationStore();
+
+  useEffect(() => {
+    if (currentUser) {
+      fetchNotifications();
+    } else {
+      resetNotifications();
+    }
+  }, [currentUser, fetchNotifications, resetNotifications]);
+
   const handleLogout = async () => {
     try {
       setIsLoading(true);
       await apiRequest.post('/auth/logout');
       updateUser(null);
+      resetNotifications();
       navigate('/');
       setOpen(false);
     } catch (error) {
@@ -29,6 +45,11 @@ function Navbar() {
 
   const handleMenuItemClick = () => {
     setOpen(false);
+  };
+
+  const displayNotificationCount = () => {
+    if (notificationsLoading) return '...';
+    return notificationCount > 0 ? notificationCount : null;
   };
 
   return (
@@ -58,7 +79,9 @@ function Navbar() {
             )}
             <span>{currentUser.username}</span>
             <Link to='/profile' className='profile'>
-              <div className='notification'>3</div>
+              {displayNotificationCount() && (
+                <div className='notification'>{displayNotificationCount()}</div>
+              )}
               <span>Profile</span>
             </Link>
             <button
@@ -113,17 +136,12 @@ function Navbar() {
             {currentUser ? (
               <div className='menu-user-section'>
                 <div className='menu-user-info'>
-                  {/* {currentUser.avatar ? (
-                    <img
-                      src={currentUser.avatar}
-                      alt={currentUser.username}
-                      className='menu-user-avatar'
-                    />
-                  ) : (
-                    <User size={24} className='menu-user-icon' />
-                  )} */}
                   <span className='menu-username'>{currentUser.username}</span>
-                  <div className='menu-notification'>3</div>
+                  {displayNotificationCount() && (
+                    <div className='menu-notification'>
+                      {displayNotificationCount()}
+                    </div>
+                  )}
                 </div>
                 <div className='menu-user-actions'>
                   <Link

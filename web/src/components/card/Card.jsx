@@ -8,7 +8,7 @@ function Card({ item }) {
         <img src={item.images?.[0] || './arrow.png' } alt='' />
       </Link>
       <div className='textContainer'>
-        <h2 className='title'>
+        <h2 className='titlee'>
           <Link to={`/post/${item.id}`}>{item.title}</Link>
         </h2>
         <p className='address'>

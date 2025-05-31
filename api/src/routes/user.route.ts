@@ -1,4 +1,4 @@
-import { getMyList, getMySaved, restoreUser, savePost } from './../controllers/user.controller';
+import { getMyList, getMySaved, restoreUser, savePost, getNotifications } from './../controllers/user.controller';
 import { verifyToken } from './../middleware/verifyToken';
 import express, { Request, Response } from 'express';
 import {
@@ -13,6 +13,7 @@ const userRouter = express.Router();
 
 userRouter.get('/', verifyToken, getUsers);
 userRouter.get('/deleted', verifyToken, getDeletedUsers);
+userRouter.get('/notifications', verifyToken, getNotifications);
 userRouter.get('/my-list', verifyToken, getMyList);
 userRouter.get('/my-saved', verifyToken, getMySaved);
 userRouter.post('/restore/:id', verifyToken, restoreUser);

@@ -559,3 +559,41 @@ export const getMySaved = async (req: Request, res: Response) => {
     });
   }
 };
+export const getNotifications = async (req: Request, res: Response) => {
+  const tokenUserId = req.userId;
+
+  if (!tokenUserId) {
+    res.status(401).json({
+      success: false,
+      message: 'User authentication required',
+    });
+    return;
+  }
+
+  try {
+    const number: number = await prisma.chat.count({
+      where: {
+        userIds: {
+          hasSome: [tokenUserId],
+        },
+        NOT: {
+          seenBy: {
+            hasSome: [tokenUserId],
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      success: true,
+      data: number,
+    });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch notifications',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+};

@@ -7,17 +7,12 @@ import { User } from 'lucide-react';
 import { formatDate } from '../../utils/formatDate';
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Await, useLoaderData } from 'react-router-dom';
+import { Suspense } from 'react';
 
 function ProfilePage() {
   const { updateUser, currentUser } = useContext(AuthContext);
-
-  const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   if (!currentUser) {
-  //     navigate('/login');
-  //   }
-  // }, [currentUser]);
+  const { listResponse, savedResponse } = useLoaderData();
 
   if (!currentUser) {
     return <div>Loading...</div>;
@@ -69,11 +64,35 @@ function ProfilePage() {
                   <button>Create New Post</button>
                 </Link>
               </div>
-              <List />
+              <Suspense fallback={<p>Loading...</p>}>
+                <Await
+                  resolve={listResponse}
+                  errorElement={<p>Error loading myList!</p>}
+                >
+                  {listResponse => (
+                    // listResponse.data.map(post => (
+                    //   console.log(post)
+                    // ))
+                    <List items={listResponse.data} />
+                  )}
+                </Await>
+              </Suspense>
               <div className='title'>
                 <h1>Saved List</h1>
               </div>
-              <List />
+              <Suspense fallback={<p>Loading...</p>}>
+                <Await
+                  resolve={savedResponse}
+                  errorElement={<p>Error loading myList!</p>}
+                >
+                  {savedResponse => (
+                    // listResponse.data.map(post => (
+                    //   console.log(post)
+                    // ))
+                    <List items={savedResponse.data} />
+                  )}
+                </Await>
+              </Suspense>
             </div>
           </div>
           <div className='chatContainer'>

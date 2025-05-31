@@ -496,10 +496,11 @@ export const getMyList = async (req: Request, res: Response) => {
   const tokenUserId = req.userId;
 
   if (!tokenUserId) {
-    return res.status(401).json({
+    res.status(401).json({
       success: false,
       message: 'User authentication required',
     });
+    return;
   }
 
   try {
@@ -513,6 +514,42 @@ export const getMyList = async (req: Request, res: Response) => {
       message: 'My list retrieved successfully',
       data: myList,
       count: myList.length,
+    });
+  } catch (error) {
+    console.error('Error getting user posts:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error while getting my list',
+    });
+  }
+};
+
+export const getMySaved = async (req: Request, res: Response) => {
+  const tokenUserId = req.userId;
+
+  if (!tokenUserId) {
+    res.status(401).json({
+      success: false,
+      message: 'User authentication required',
+    });
+    return;
+  }
+
+  try {
+    const mySaved = await prisma.savedPost.findMany({
+      where: { userId: tokenUserId },
+      include: {
+        post: true,
+      },
+    });
+
+    const mySavedPosts = mySaved.map(item => item.post);
+
+    res.status(200).json({
+      success: true,
+      message: 'My saved posts retrieved successfully',
+      data: mySavedPosts,
+      count: mySavedPosts.length,
     });
   } catch (error) {
     console.error('Error getting user posts:', error);

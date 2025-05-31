@@ -13,7 +13,7 @@ export const SocketContextProvider = ({ children }) => {
 
   useEffect(() => {
     const newSocket = io(SOCKET_URL, {
-      // withCredentials: true,
+      withCredentials: true,
     });
 
     newSocket.on('connect', () => {

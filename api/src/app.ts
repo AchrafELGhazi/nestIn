@@ -21,14 +21,7 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin:
-      config.nodeEnv === 'production'
-        ? config.frontendUrl
-        : [
-            config.frontendUrl,
-            'http://localhost:3000',
-            'http://127.0.0.1:3000',
-          ],
+    origin: config.frontendUrl,
     credentials: true,
   })
 );
@@ -60,15 +53,8 @@ const getUser = (userId: string) => {
 
 const io = new Server(server, {
   cors: {
-    origin:
-      config.nodeEnv === 'production'
-        ? config.frontendUrl
-        : [
-            config.frontendUrl,
-            'http://localhost:3000',
-            'http://127.0.0.1:3000',
-          ],
-    methods: ['GET', 'POST'],
+    origin: config.frontendUrl,
+    // methods: ['GET', 'POST'],
     credentials: true,
   },
 });
@@ -77,18 +63,22 @@ io.on('connection', socket => {
   console.log(`🔌 Socket connected: ${socket.id}`);
 
   socket.on('newUser', (userId: string) => {
+    if (!userId || typeof userId !== 'string') {
+      return socket.emit('error', 'Invalid user ID');
+    }
     addUser(userId, socket.id);
     console.log(`✅ User ${userId} connected`);
     console.log('Online users:', onlineUsers);
   });
 
   socket.on('sendMessage', ({ receiverId, data }) => {
-    const receiver = getUser(receiverId);
-    if (receiver) {
-      io.to(receiver.socketId).emit('getMessage', data);
-      console.log(`📤 Message sent to ${receiverId}`);
-    } else {
-      console.warn(`⚠ Receiver ${receiverId} not found`);
+    try {
+      const receiver = getUser(receiverId);
+      if (receiver) {
+        io.to(receiver.socketId).emit('getMessage', data);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
   });
 
